@@ -14,21 +14,9 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::all();
-
-        if ($tasks) {
-            return response()->json(['msg' => "Это index", "data" => $tasks]);
-        }
-
-        return response()->json(['msg' => "Что-то пошло не так"]);
+        return response()->json(['data' => $tasks], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return response()->json(['msg' => "Это index"]);
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -36,10 +24,14 @@ class TaskController extends Controller
     public function store(StoreValidation $request)
     {
         $data = $request->validated();
-        if ($data) {
-            Task::create($data);
-            return response()->json(['msg' => "Добавлено", 'data' => $data]);
-        }
+        $newTask = Task::create($data);
+        return response()->json(
+            [
+                'msg' => "Добавлено",
+                'data' => $newTask
+            ],
+            201
+        );
     }
 
     /**
@@ -49,10 +41,22 @@ class TaskController extends Controller
     {
         $task = Task::find($id);
         if ($task) {
-            return response()->json(["msg" => "Успешно", 'data' => $task]);
+            return response()->json(
+                [
+                    "msg" => "Успешно",
+                    'data' => $task
+                ],
+                200
+            );
+        } else {
+            return response()->json(
+                [
+                    'msg' => "Запись не найдена",
+                    "data" => []
+                ],
+                404
+            );
         }
-
-        return response()->json(['msg' => "Пользователь не найден"]);
     }
 
     /**
@@ -62,9 +66,25 @@ class TaskController extends Controller
     {
         $data = $request->validated();
         $editTask = Task::find($id);
-        $editTask->update($data);
+        if ($editTask) {
+            $editTask->update($data);
 
-        return response()->json(['msg' => "Успешно обновлено", "data" => $data]);
+            return response()->json(
+                [
+                    'msg' => "Успешно обновлено",
+                    "data" => $editTask
+                ],
+                200
+            );
+        } else {
+            return response()->json(
+                [
+                    'msg' => "Запись не найдена",
+                    "data" => []
+                ],
+                404
+            );
+        }
     }
 
     /**
@@ -72,8 +92,13 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        Task::find($id)->delete();
+        $task = Task::find($id);
+        if ($task) {
+            $task->delete();
 
-        return response()->json(['msg' => "Элемент $id успешно удален "]);
+            return response()->json(['msg' => "Элемент $id успешно удален "], 200);
+        } else {
+            return response()->json(['msg' => "Запись не найдена"], 404);
+        }
     }
 }
