@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreValidation;
+use App\Http\Resources\TaskResource;
+
+use function PHPSTORM_META\type;
 
 class TaskController extends Controller
 {
@@ -13,8 +16,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
-        return response()->json(['data' => $tasks], 200);
+        return response()->json(['data' => TaskResource::collection(Task::all())], 200);
     }
 
 
@@ -28,7 +30,7 @@ class TaskController extends Controller
         return response()->json(
             [
                 'msg' => "Добавлено",
-                'data' => $newTask
+                'data' => new TaskResource($newTask)
             ],
             201
         );
@@ -44,7 +46,7 @@ class TaskController extends Controller
             return response()->json(
                 [
                     "msg" => "Успешно",
-                    'data' => $task
+                    'data' => new TaskResource($task)
                 ],
                 200
             );
@@ -65,6 +67,7 @@ class TaskController extends Controller
     public function update(StoreValidation $request, $id)
     {
         $data = $request->validated();
+
         $editTask = Task::find($id);
         if ($editTask) {
             $editTask->update($data);
@@ -72,7 +75,7 @@ class TaskController extends Controller
             return response()->json(
                 [
                     'msg' => "Успешно обновлено",
-                    "data" => $editTask
+                    "data" => new TaskResource($editTask)
                 ],
                 200
             );

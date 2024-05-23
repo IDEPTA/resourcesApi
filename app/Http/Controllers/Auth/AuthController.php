@@ -16,7 +16,6 @@ class AuthController extends Controller
         $user = User::where("email", $request->email)->first();
         if ($user && Hash::check($request->password, $user->password)) {
             $token = $user->createToken("accessAfterLogin")->plainTextToken;
-
             return response()->json(['msg' => "авторизация успешна", "token" => $token]);
         }
 
