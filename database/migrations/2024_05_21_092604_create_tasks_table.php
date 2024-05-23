@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text("title");
             $table->text("text");
             $table->date("deadline");
+            $table->boolean("completed")->default(1);
             $table->timestamps();
         });
     }
