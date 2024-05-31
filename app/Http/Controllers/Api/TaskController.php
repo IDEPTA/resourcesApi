@@ -5,13 +5,20 @@ namespace App\Http\Controllers\Api;
 use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreValidation;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * Контроллер, отвечающий за crud операции связанные с задачами
+ */
 class TaskController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Возвращает весь список задач.
      */
-    public function index()
+    /**
+     * @return JsonResponse json со всеми задачами
+     */
+    public function index(): JsonResponse 
     {
         $tasks = Task::all();
         return response()->json(['data' => $tasks], 200);
@@ -19,9 +26,14 @@ class TaskController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Добавляет задачу в базу данных.
      */
-    public function store(StoreValidation $request)
+    /**
+     * @param StoreValidation $request валидация входящего запроса
+     * 
+     * @return JsonResponse json ответ с новой задачей и сообщением
+     */
+    public function store(StoreValidation $request): JsonResponse 
     {
         $data = $request->validated();
         $newTask = Task::create($data);
@@ -35,9 +47,14 @@ class TaskController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Возвращает конкретную задачу.
      */
-    public function show($id)
+    /**
+     * @param int $id id задачи
+     * 
+     * @return JsonResponse json ответ с нужной задачей или пустой массив с сообщением
+     */
+    public function show(int $id): JsonResponse 
     {
         $task = Task::find($id);
         if ($task) {
@@ -60,9 +77,15 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Обновляет задачу по id.
      */
-    public function update(StoreValidation $request, $id)
+    /**
+     * @param StoreValidation $request запрос на обновление задачи и его валидация
+     * @param int $id id задачи
+     * 
+     * @return JsonResponse json ответ с обновленной задачей или пустой массив с сообщением
+     */
+    public function update(StoreValidation $request, int $id): JsonResponse 
     {
         $data = $request->validated();
         $editTask = Task::find($id);
@@ -72,7 +95,7 @@ class TaskController extends Controller
             return response()->json(
                 [
                     'msg' => "Успешно обновлено",
-                    "data" => $editTask
+                    "data" => $data
                 ],
                 200
             );
@@ -88,9 +111,14 @@ class TaskController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Удаление задачи по id.
      */
-    public function destroy($id)
+    /**
+     * @param int $id id задачи
+     * 
+     * @return JsonResponse сообщение об удалении задачи или о том, что запись не найдена
+     */
+    public function destroy(int $id): JsonResponse 
     {
         $task = Task::find($id);
         if ($task) {
