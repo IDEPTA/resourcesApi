@@ -11,26 +11,30 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function login(LoginValidation $request){
-        $user = User::where("email",$request->email)->first();
-        if($user && Hash::check($request->password,$user->password)){
+    public function login(LoginValidation $request)
+    {
+        $user = User::where("email", $request->email)->first();
+        if ($user && Hash::check($request->password, $user->password)) {
             $token = $user->createToken("accessAfterLogin")->plainTextToken;
-
-            return response()->json(['msg' => "авторизация успешна","token" => $token]);
+            return response()->json(['msg' => "авторизация успешна", "token" => $token]);
         }
+
+        return response()->json(['msg' => "Пользователь не найден", "token" => null]);
     }
 
-    public function register(RegisterValidation $request){
+    public function register(RegisterValidation $request)
+    {
         $data = $request->validated();
         $user = User::create($data);
-        if($user){
+        if ($user) {
             $token = $user->createToken("accessAfterRegister")->plainTextToken;
         }
 
         return response()->json(['token' => $token]);
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['msg' => "токен удален"]);

@@ -25,6 +25,7 @@ class StoreValidation extends FormRequest
             "title" => "required|string|max:255",
             "text" => "required|string|max:255",
             "deadline" => "date",
+            "completed" => "boolean"
         ];
     }
 }

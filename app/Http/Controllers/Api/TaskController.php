@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreValidation;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\TaskResource;
 
 /**
  * Контроллер, отвечающий за crud операции связанные с задачами
@@ -20,8 +21,7 @@ class TaskController extends Controller
      */
     public function index(): JsonResponse 
     {
-        $tasks = Task::all();
-        return response()->json(['data' => $tasks], 200);
+        return response()->json(['data' => TaskResource::collection(Task::all())], 200);
     }
 
 
@@ -40,7 +40,7 @@ class TaskController extends Controller
         return response()->json(
             [
                 'msg' => "Добавлено",
-                'data' => $newTask
+                'data' => new TaskResource($newTask)
             ],
             201
         );
@@ -61,7 +61,7 @@ class TaskController extends Controller
             return response()->json(
                 [
                     "msg" => "Успешно",
-                    'data' => $task
+                    'data' => new TaskResource($task)
                 ],
                 200
             );
@@ -88,6 +88,7 @@ class TaskController extends Controller
     public function update(StoreValidation $request, int $id): JsonResponse 
     {
         $data = $request->validated();
+
         $editTask = Task::find($id);
         if ($editTask) {
             $editTask->update($data);
